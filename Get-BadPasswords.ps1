@@ -137,6 +137,8 @@ Function Get-bADpasswords
 
     # Constant
     $strBlankPasswordNThash = '31d6cfe0d16ae931b73c59d7e0c089c0'
+    # Put your domain here.
+    $strDomain = 'exproject'
 
     # ============ #
     # FUNCTIONS => #
@@ -341,7 +343,8 @@ Function Get-bADpasswords
             If(dsquery user -samid ($strUserSamAccountName+"-a"))
             {
                 Write-Verbose "| Linked admin user found. Looking for identical password"
-                $linkedAdmin = Get-ADReplAccount -SamAccountName ($strUserSamAccountName+"-a") -Server $strDomainController -Domain exproject | Where {$_.Enabled -eq $true -and $_.SamAccountType -eq 'User'} | Select SamAccountName,@{Name="NTHashHex";Expression={ConvertTo-Hex $_.NTHash}}
+                # Change the samAccountName here to whatever pattern is used in the environment
+                $linkedAdmin = Get-ADReplAccount -SamAccountName ($strUserSamAccountName+"-a") -Server $strDomainController -Domain $strDomain | Where {$_.Enabled -eq $true -and $_.SamAccountType -eq 'User'} | Select SamAccountName,@{Name="NTHashHex";Expression={ConvertTo-Hex $_.NTHash}}
                 if($linkedAdmin.NTHashHex -eq $strUserNTHashHex)
                 {
                     If ($bolWriteToLogFile)
